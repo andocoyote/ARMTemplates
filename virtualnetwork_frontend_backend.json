@@ -1,0 +1,152 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "defaultValue": "rg",
+            "type": "String"
+        },
+        "location": {
+            "defaultValue": "westus2",
+            "type": "String"
+        },
+        "virtualNetworkName": {
+            "defaultValue": "-vnet",
+            "type": "String"
+        },
+        "frontendSubnetName": {
+            "defaultValue": "Frontend",
+            "type": "String"
+        },
+        "backendSubnetName": {
+            "defaultValue": "Backend",
+            "type": "String"
+        },
+        "virtualNetworkRange": {
+            "defaultValue": "10.1.0.0/23",
+            "type": "String"
+        },
+        "frontendSubnetRange": {
+            "defaultValue": "10.1.0.0/24",
+            "type": "String"
+        },
+        "backendSubnetRange": {
+            "defaultValue": "10.1.1.0/24",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "frontendNsgName": "[concat(parameters('frontendSubnetName'), '-nsg')]",
+        "backendNsgName": "[concat(parameters('backendSubnetName'), '-nsg')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('frontendNsgName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "description": "Remote Desktop (RDP) Connection",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2020-05-01",
+            "name": "[concat(variables('frontendNsgName'), '/RDP')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontendNsgName'))]"
+            ],
+            "properties": {
+                "description": "Remote Desktop (RDP) Connection",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3389",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('backendNsgName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontendNsgName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('backendNsgName'))]"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('frontendSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('frontendSubnetRange')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('frontendNsgName'))]"
+                            },
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "[parameters('backendSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('backendSubnetRange')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Network/networkSecurityGroups', variables('backendNsgName'))]"
+                            },
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+            }
+        }
+    ]
+}
