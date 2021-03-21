@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "value": "MyResourceGroup"
+        },
+        "location": {
+            "value": "westus2"
+        },
+        "virtualNetworkName": {
+            "value": "MyNetwork-vnet"
+        },
+        "frontendSubnetName": {
+            "value": "Frontend"
+        },
+        "backendSubnetName": {
+            "value": "Backend"
+        },
+        "virtualNetworkRange": {
+            "value": "10.1.0.0/23"
+        },
+        "frontendSubnetRange": {
+            "value": "10.1.0.0/24"
+        },
+        "backendSubnetRange": {
+            "value": "10.1.1.0/24"
+        }
+    }
+}
