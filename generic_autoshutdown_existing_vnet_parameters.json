@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "value": "MyResourceGroup"
+        },
+        "OSPublisher": {
+            "value": "MicrosoftWindowsServer"
+        },
+        "OSOffer": {
+            "value": "WindowsServer"
+        },
+        "OSSKU": {
+            "value": "2019-Datacenter-smalldisk"
+        },
+        "virtualNetworkName": {
+            "value": "MyNetwork-vnet"
+        },
+        "networkInterfaceType": {
+            "value": "public"
+        },
+        "virtualMachineName": {
+            "value": "datacenter-2019-smalldisk-1"
+        },
+        "networkSecurityGroupName": {
+            "value": "Frontend-nsg"
+        },
+        "privateIPAddress": {
+            "value": "10.1.0.4"
+        },
+        "privateIPAllocationMethod": {
+            "value": "static"
+        },
+        "subnetName": {
+            "value": "Frontend"
+        },
+        "location": {
+            "value": "westus2"
+        },
+        "computerName": {
+            "value": "datacenter20191"
+        },
+        "adminUsername": {
+            "value": "MyUsername"
+        },
+        "adminPassword": {
+            "value": "MyPassword"
+        },
+        "shutdown_schedule_notification_email": {
+            "value": "MyAddress@email.com"
+        }
+    }
+}
