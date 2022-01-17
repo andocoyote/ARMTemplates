@@ -18,6 +18,10 @@
             "defaultValue": "2019-Datacenter-smalldisk",
             "type": "String"
         },
+        "virtualMachineSize": {
+            "defaultValue": "Standard_DS1_v2",
+            "type": "String"
+        },
         "virtualNetworkName": {
             "defaultValue": "-vnet",
             "type": "String"
@@ -89,7 +93,7 @@
         {
             "condition": "[equals(parameters('networkInterfaceType'), 'public')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2020-05-01",
+            "apiVersion": "2021-06-01",
             "name": "[variables('publicIPAddressName')]",
             "location": "[parameters('location')]",
             "sku": {
@@ -97,16 +101,32 @@
             }
         },
         {
+            "type": "Microsoft.Compute/disks",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('virtualMachineName'),'-datadisk1')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "StandardSSD_LRS"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGb": 16
+            }
+        },
+        {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2019-07-01",
+            "apiVersion": "2021-11-01",
             "name": "[parameters('virtualMachineName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-datadisk1'))]"
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "Standard_DS1_v2"
+                    "vmSize": "[parameters('virtualMachineSize')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -119,9 +139,21 @@
                         "osType": "Windows",
                         "name": "[concat(parameters('virtualMachineName'), '_OsDisk_1')]",
                         "createOption": "FromImage",
-                        "caching": "ReadWrite"
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "StandardSSD_LRS"
+                        }
                     },
-                    "dataDisks": []
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "name": "[concat(parameters('virtualMachineName'),'-datadisk1')]",
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-datadisk1'))]"
+                            }
+                        }
+                    ]
                 },
                 "osProfile": {
                     "computerName": "[parameters('computerName')]",

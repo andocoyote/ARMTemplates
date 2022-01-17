@@ -6,16 +6,16 @@
             "value": "MyResourceGroup"
         },
         "OSPublisher": {
-            "value": "MicrosoftWindowsServer"
+            "value": "MicrosoftWindowsDesktop"
         },
         "OSOffer": {
-            "value": "WindowsServer"
+            "value": "Windows-10"
         },
         "OSSKU": {
-            "value": "2019-Datacenter-smalldisk"
+            "value": "win10-21h2-pro"
         },
         "virtualMachineSize": {
-            "value": "Standard_DS1_v2"
+            "value": "Standard_D4_v5"
         },
         "virtualNetworkName": {
             "value": "MyNetwork-vnet"
@@ -24,7 +24,7 @@
             "value": "public"
         },
         "virtualMachineName": {
-            "value": "datacenter-2019-smalldisk-1"
+            "value": "win10-21h2-pro-vm"
         },
         "networkSecurityGroupName": {
             "value": "Frontend-nsg"
@@ -42,7 +42,7 @@
             "value": "westus2"
         },
         "computerName": {
-            "value": "datacenter20191"
+            "value": "andowin10provm_"
         },
         "adminUsername": {
             "value": "MyUsername"
