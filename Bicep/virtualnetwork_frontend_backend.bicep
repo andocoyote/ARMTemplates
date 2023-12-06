@@ -1,17 +1,23 @@
-// Creates a small VNet with two subnets each with 255 possible addresses by default.
+// Creates a small VNet with three subnets each with 256 possible addresses by default.
 // Creates all resources in the same location as the resource group.
 
 param location string = resourceGroup().location
+
 param virtualNetworkName string = 'MyNetwork-vnet'
+param gatewaySubnetName string = 'GatewaySubnet'
 param frontendSubnetName string = 'Frontend'
 param backendSubnetName string = 'Backend'
-param virtualNetworkRange string = '10.1.0.0/23'
-param frontendSubnetRange string = '10.1.0.0/24'
-param backendSubnetRange string = '10.1.1.0/24'
+
+param virtualNetworkRange string = '10.1.0.0/22'
+param gatewaySubnetRange string = '10.1.0.0/24'
+param frontendSubnetRange string = '10.1.1.0/24'
+param backendSubnetRange string = '10.1.2.0/24'
 
 var frontendNsgName = '${frontendSubnetName}-nsg'
 var backendNsgName = '${backendSubnetName}-nsg'
 
+
+// Create the frontend Network Security Group
 resource frontendNsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   name: frontendNsgName
   location: location
@@ -39,6 +45,7 @@ resource frontendNsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   }
 }
 
+// Create the RDP security rule for the frontend Network Security Group
 resource frontendNsgName_RDP 'Microsoft.Network/networkSecurityGroups/securityRules@2020-05-01' = {
   parent: frontendNsg
   name: 'RDP'
@@ -59,6 +66,7 @@ resource frontendNsgName_RDP 'Microsoft.Network/networkSecurityGroups/securityRu
   }
 }
 
+// Create the backend Network Security Group
 resource backendNsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   name: backendNsgName
   location: location
@@ -67,6 +75,7 @@ resource backendNsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
   }
 }
 
+// Create the virtual network
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-05-01' = {
   name: virtualNetworkName
   location: location
@@ -77,6 +86,16 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-05-01' = {
       ]
     }
     subnets: [
+	  {
+        name: gatewaySubnetName
+        properties: {
+          addressPrefix: gatewaySubnetRange
+          serviceEndpoints: []
+          delegations: []
+          privateEndpointNetworkPolicies: 'Enabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+        }
+      }
       {
         name: frontendSubnetName
         properties: {
