@@ -8,6 +8,7 @@ param gatewaySubnetName string = 'GatewaySubnet'
 param frontendSubnetName string = 'Frontend'
 param backendSubnetName string = 'Backend'
 
+// Create 3 subnets, each with 256 possible addresses
 param virtualNetworkRange string = '10.1.0.0/22'
 param gatewaySubnetRange string = '10.1.0.0/24'
 param frontendSubnetRange string = '10.1.1.0/24'
@@ -132,3 +133,5 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-05-01' = {
     backendNsg
   ]
 }
+
+output virtualNetworkName string = virtualNetwork.name
