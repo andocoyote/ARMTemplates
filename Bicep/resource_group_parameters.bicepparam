@@ -4,4 +4,4 @@
 
 using './/resource_group.bicep'
 
-param resourceGroupName = 'MyResourceGroup'
+param resourceGroupName = 'MyResourceGroup-rg'

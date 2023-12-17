@@ -8,8 +8,10 @@ param IPConfigurationName string = 'gateway-gwipc'
 param publicIPAddress_externalid string = ''
 param virtualNetworkName string = ''
 param addressPrefixes string = '172.16.201.0/28'
-param publicCertData string = 'Your .cer string here'
 param publicCertName string = 'PS2RootCert'
+
+@secure()
+param publicCertData string
 
 var gatewaySubnetName = 'GatewaySubnet'
 

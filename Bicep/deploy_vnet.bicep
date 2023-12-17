@@ -1,12 +1,22 @@
 targetScope='subscription'
 
 param resourceGroupLocation string = deployment().location
+param subscriptionID string = subscription().subscriptionId
 
 param resourceGroupName string = 'MyResourceGroup-rg'
 param virtualNetworkName string = 'MyNetwork-vnet'
 param IPAddressName string = 'gateway-pip'
 param virtualNetworkGatewayName string = 'MyNetwork-vgw'
 
+param keyVaultResourceGroupName string = 'ando_general_resource'
+param keyVaultName string = 'kv-general-key-vault'
+param cerSecretName string = 'PS2RootCert-PublicCertificateData'
+
+
+resource myKv 'Microsoft.KeyVault/vaults@2021-11-01-preview' existing = {
+  name: keyVaultName
+  scope: resourceGroup(subscriptionID, keyVaultResourceGroupName)
+}
 
 // Deploy the resource group
 module resourceGroupModule '../resource_group.bicep' = {
@@ -52,6 +62,7 @@ module GatewayModule '../virtualnetworkgateway.bicep' = {
 	virtualNetworkName: VNetModule.outputs.virtualNetworkName
 	publicIPAddress_externalid: GatewayIPAddressModule.outputs.IPAddressID
 	virtualNetworkGatewayName: virtualNetworkGatewayName
+	publicCertData: myKv.getSecret(cerSecretName)
   }
   dependsOn: [
     resourceGroupModule

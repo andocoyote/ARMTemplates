@@ -5,7 +5,9 @@
 using './/virtualnetworkgateway.bicep'
 
 param virtualNetworkGatewayName = 'MyNetwork-vgw'
-param publicIPAddress_externalid = null
-param virtualNetworkName = null
+param virtualNetworkName = 'MyNetwork-vnet'
 param addressPrefixes = '172.16.201.0/28'
-param publicCertData = null
+
+// These parameters must be provided for the Bicep deployment to work
+param publicIPAddress_externalid = ''
+param publicCertData = ''
